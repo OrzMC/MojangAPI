@@ -114,3 +114,20 @@ public extension Mojang {
         return UserProfile(name: info.name, id: info.id)
     }
 }
+
+public extension Mojang {
+    /// 从版本 JSON 解析 Java 需求：读 `javaVersion.majorVersion`，缺失默认 8，
+    /// **不按 MC 版本硬编码**（对齐 `docs/spec/behavior.md` B5）。离线、纯函数。
+    static func javaRequirement(fromVersionJSON data: Data) throws -> JavaRequirement {
+        struct Wrapper: Decodable {
+            struct JavaVersion: Decodable { let majorVersion: Int? }
+            let javaVersion: JavaVersion?
+        }
+        do {
+            let wrapper = try JSONDecoder().decode(Wrapper.self, from: data)
+            return JavaRequirement(majorVersion: wrapper.javaVersion?.majorVersion ?? JavaRequirement.defaultMajor)
+        } catch {
+            throw MojangAPIError.decodingFailed
+        }
+    }
+}
