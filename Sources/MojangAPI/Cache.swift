@@ -3,31 +3,12 @@ import Foundation
 actor APICache {
     static let shared = APICache()
 
-    private var manifest: Manifest?
-    private var manifestExpiresAt: Date?
-
     private struct GameVersionEntry { var value: GameVersion; var lastAccess: Date }
     private struct AssetIndexEntry { var value: GameVersionAsset; var lastAccess: Date }
     private var gameVersionsById: [String: GameVersionEntry] = [:]
     private var assetIndicesById: [String: AssetIndexEntry] = [:]
     private let gameVersionCapacity = 128
     private let assetIndexCapacity = 128
-
-    /// 获取清单并进行 TTL 缓存命中。
-    /// - Parameters:
-    ///   - forceUpdate: 是否忽略缓存强制刷新。
-    ///   - ttl: 缓存有效时长（秒）。
-    ///   - loader: 清单加载器（网络/解析）。
-    /// - Returns: 清单对象。
-    func getManifest(forceUpdate: Bool, ttl: TimeInterval, loader: () async throws -> Manifest) async throws -> Manifest {
-        if let m = manifest, let exp = manifestExpiresAt, !forceUpdate, exp > Date() {
-            return m
-        }
-        let new = try await loader()
-        manifest = new
-        manifestExpiresAt = Date().addingTimeInterval(ttl)
-        return new
-    }
 
     /// 获取指定版本 id 对应的 GameVersion（带 LRU 缓存）。
     /// - Parameters:

@@ -1,5 +1,6 @@
 import Testing
 import Foundation
+import CacheKit
 @testable import MojangAPI
 
 @Test
@@ -65,21 +66,25 @@ func with_retry_behavior() async {
 }
 
 @Test
-func cache_manifest_ttl_behavior() async throws {
-    let latest = Components.Schemas.Latest(release: "r", snapshot: "s")
-    let v = Components.Schemas.Version(id: "x", _type: .release, url: "https://piston-meta.mojang.com/v1/packages/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/x.json")
+func manifest_cache_uses_disk_ttl() async throws {
+    let dir = URL(fileURLWithPath: NSTemporaryDirectory())
+        .appendingPathComponent("mojangapi-tests", isDirectory: true)
+        .appendingPathComponent(UUID().uuidString, isDirectory: true)
+    defer { try? FileManager.default.removeItem(at: dir) }
+
+    let cache = MetadataCache(directory: dir)
+    let url = cache.fileURL("version_manifest.json")
     var calls = 0
-    let first = try await APICache.shared.getManifest(forceUpdate: true, ttl: 3600) {
+    let first = try await cache.get(ManifestSummary.self, at: url) {
         calls += 1
-        return Components.Schemas.Manifest(latest: latest, versions: [v])
+        return ManifestSummary(latestRelease: "r", latestSnapshot: "s", versions: [])
+    }
+    let second = try await cache.get(ManifestSummary.self, at: url) {
+        calls += 1
+        return ManifestSummary(latestRelease: "r2", latestSnapshot: "s2", versions: [])
     }
     #expect(calls == 1)
-    let second = try await APICache.shared.getManifest(forceUpdate: false, ttl: 3600) {
-        calls += 1
-        return Components.Schemas.Manifest(latest: latest, versions: [v])
-    }
-    #expect(calls == 1)
-    #expect(first.latest.release == second.latest.release)
+    #expect(first.latestRelease == second.latestRelease)
 }
 
 @Test

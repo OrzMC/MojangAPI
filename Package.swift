@@ -5,11 +5,8 @@ import PackageDescription
 let package = Package(
     name: "MojangAPI",
     platforms: [
-        .macOS(.v10_15),
-        .iOS(.v13),
-        .tvOS(.v13),
-        .watchOS(.v6),
-        .visionOS(.v1),
+        .macOS(.v13),
+        .iOS(.v16),
     ],
     products: [
         .library(
@@ -30,6 +27,10 @@ let package = Package(
             url: "https://github.com/apple/swift-openapi-urlsession.git",
             from: "1.2.0"
         ),
+        .package(
+            url: "https://github.com/OrzGeeker/OrzSwiftKit.git",
+            branch: "main"
+        ),
     ],
     targets: [
         .target(
@@ -43,6 +44,10 @@ let package = Package(
                     name: "OpenAPIURLSession",
                     package: "swift-openapi-urlsession"
                 ),
+                .product(
+                    name: "CacheKit",
+                    package: "OrzSwiftKit"
+                ),
             ],
             plugins: [
                 .plugin(
@@ -53,7 +58,7 @@ let package = Package(
         ),
         .testTarget(
             name: "MojangAPITests",
-            dependencies: ["MojangAPI"],
+            dependencies: ["MojangAPI", .product(name: "CacheKit", package: "OrzSwiftKit")],
             resources: [
                 .process("Fixtures")
             ]

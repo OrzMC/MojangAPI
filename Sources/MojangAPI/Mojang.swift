@@ -1,3 +1,4 @@
+import CacheKit
 import Foundation
 
 public struct Mojang {
@@ -40,17 +41,19 @@ public struct Mojang {
         return versions
     }
     
-    /// 获取版本清单（含 TTL 缓存，默认 1 小时）。
+    /// 获取版本清单（落盘 TTL 缓存，默认 24h；`forceUpdate` 绕过缓存；失败回退旧副本）。
     /// - Parameter forceUpdate: 是否忽略缓存强制刷新。
     /// - Returns: `Manifest` 清单对象。
     /// - Throws: 网络或解析相关错误。
     public static func manifest(forceUpdate: Bool = true) async throws -> Manifest {
         do {
-            let manifestValue = try await APICache.shared.getManifest(forceUpdate: forceUpdate, ttl: manifestCacheTimeToLive) {
+            let config = await Mojang.cacheConfig(refresh: forceUpdate)
+            let cache = MetadataCache(directory: config.directory, policy: config.policy, refresh: config.refresh)
+            let manifestURL = cache.fileURL("version_manifest.json")
+            return try await cache.get(Manifest.self, at: manifestURL) {
                 let output = try await Mojang.withRetry { try await manifestClient.getMinecraftGameVersionManifest() }
                 return try output.jsonOrThrow()
             }
-            return manifestValue
         } catch {
             throw MojangAPIError.wrap(error)
         }
@@ -70,7 +73,6 @@ public struct Mojang {
         }
     }
     
-    private static let manifestCacheTimeToLive: TimeInterval = 3600
 }
 
 public extension Mojang {
