@@ -1,14 +1,27 @@
 name: Tests
 
 on:
+  # 只在 main 上跑 push；PR 分支的 push 交给 pull_request 事件，
+  # 避免同一提交被 push+pull_request 各跑一次（曾因此每次 PR 双跑）。
   push:
+    branches: [main]
   pull_request:
+  workflow_dispatch:
 
 jobs:
   unit:
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Cache SwiftPM
+        uses: actions/cache@v4
+        with:
+          path: |
+            .build
+            ~/Library/Caches/org.swift.swiftpm
+          key: spm-${{ runner.os }}-${{ hashFiles('Package.resolved', 'Package.swift') }}
+          restore-keys: |
+            spm-${{ runner.os }}-
       - name: Build
         run: swift build -c debug
       - name: Run tests
