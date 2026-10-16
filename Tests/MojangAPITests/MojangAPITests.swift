@@ -2,6 +2,9 @@ import Testing
 import MojangAPI
 import Foundation
 
+/// 联网测试仅在 `ORZMC_NETWORK_SMOKE=1` 时跑（CI 默认只跑离线、确定性套件）。
+private let networkSmoke = ProcessInfo.processInfo.environment["ORZMC_NETWORK_SMOKE"] == "1"
+
 @Test func Hosts() async throws {
     // Server Host
     try #expect(Servers.Server1.url().host() == "launchermeta.mojang.com")
@@ -12,7 +15,7 @@ import Foundation
     // Microsoft-related servers removed to keep MojangAPI pure
 }
 
-@Test func manifest() async throws {
+@Test(.enabled(if: networkSmoke)) func manifest() async throws {
     
     // Manifest
     let manifest = try await Mojang.manifest()
@@ -38,7 +41,7 @@ import Foundation
     #expect(assetIndexObject.objects.additionalProperties.isEmpty == false)
 }
 
-@Test(arguments: [
+@Test(.enabled(if: networkSmoke), arguments: [
     ("1.21.4", BuildType.snapshot),
     ("1.21.4", BuildType.release),
     ("1.21.1", BuildType.snapshot),
@@ -64,7 +67,7 @@ func versions(id: String?, type: BuildType) async throws {
 }
 
 
-@Test
+@Test(.enabled(if: networkSmoke))
 func getUserInfo() async throws {
     let info = try await Mojang.userInfo(with: "Notch")
     #expect(info.name == "Notch")

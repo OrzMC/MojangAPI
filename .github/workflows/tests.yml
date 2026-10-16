@@ -37,3 +37,23 @@ jobs:
             .build
             ~/Library/Caches/org.swift.swiftpm
           key: ${{ steps.cache.outputs.cache-primary-key }}
+
+  # 真实联网冒烟（仅手动触发）：跑 `manifest()/versions()/getUserInfo()` 等打线上 API 的用例。
+  network-smoke:
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Restore SwiftPM cache
+        uses: actions/cache/restore@v4
+        with:
+          path: |
+            .build
+            ~/Library/Caches/org.swift.swiftpm
+          key: spm-${{ runner.os }}-${{ hashFiles('Package.resolved', 'Package.swift') }}
+          restore-keys: |
+            spm-${{ runner.os }}-
+      - name: Real-network tests
+        env:
+          ORZMC_NETWORK_SMOKE: "1"
+        run: swift test -q
