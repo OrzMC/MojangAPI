@@ -8,6 +8,7 @@ public enum MojangAPIError: Error, Equatable {
     case deprecatedEndpoint(String)
     case cacheMiss
     case missingSHA1
+    case hashMismatch
     case unknown(String)
     case httpError(status: Int, code: Int?, message: String)
 }

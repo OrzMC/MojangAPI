@@ -17,11 +17,20 @@ public extension Mojang {
     static func configureCache(policy: CachePolicy) {
         cachePolicy = policy
     }
+
+    /// 设置游戏版本 JSON 的磁盘缓存目录（应为 `<root>/cache`，与 Python `orzmc` 共享）。
+    /// 传 `nil` 恢复「仅内存缓存」。
+    @MainActor
+    static func configurePackageCache(directory: URL?) {
+        packageCacheDirectory = directory
+    }
 }
 
 extension Mojang {
     @MainActor static var cacheDirectory: URL = Mojang.defaultCacheDirectory
     @MainActor static var cachePolicy: CachePolicy = .standard
+    /// 游戏版本 JSON 缓存目录；`nil` 时只走内存 LRU（旧行为）。
+    @MainActor static var packageCacheDirectory: URL?
 
     static var defaultCacheDirectory: URL {
         let base = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask).first

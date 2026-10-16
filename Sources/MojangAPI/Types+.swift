@@ -35,7 +35,7 @@ extension Version: Identifiable {
     public var gameVersion: GameVersion? {
         get async throws {
             guard let packageSHA1 = packageSHA1 else { throw MojangAPIError.missingSHA1 }
-            if let gameVersion = try await APICache.shared.getGameVersion(id: id, sha1: packageSHA1, loader: { try await Mojang.fetchPackage(id: id, sha1: packageSHA1) }) {
+            if let gameVersion = try await APICache.shared.getGameVersion(id: id, sha1: packageSHA1, loader: { try await Mojang.fetchGameVersionPackage(id: id, sha1: packageSHA1) }) {
                 return gameVersion
             }
             throw MojangAPIError.cacheMiss
