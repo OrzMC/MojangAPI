@@ -11,7 +11,7 @@ import PackageDescription
 let package = Package(    
     dependencies: [
         .package(
-            url: "https://github.com/wangzhizhou/MojangAPI.git",
+            url: "https://github.com/OrzMC/MojangAPI.git",
             branch: "main"
         ),
     ],
@@ -48,9 +48,9 @@ let versions = try await Mojang.versionsInfo(id: "1.21")
 let profile = try await Mojang.userProfile(with: "Notch")
 ```
 
-[swift]: <https://img.shields.io/endpoint?url=https%3A%2F%2Fswiftpackageindex.com%2Fapi%2Fpackages%2Fwangzhizhou%2FMojangAPI%2Fbadge%3Ftype%3Dswift-versions>
-[platform]: <https://img.shields.io/endpoint?url=https%3A%2F%2Fswiftpackageindex.com%2Fapi%2Fpackages%2Fwangzhizhou%2FMojangAPI%2Fbadge%3Ftype%3Dplatforms>
-[repo]: <https://swiftpackageindex.com/wangzhizhou/MojangAPI>
+[swift]: <https://img.shields.io/endpoint?url=https%3A%2F%2Fswiftpackageindex.com%2Fapi%2Fpackages%2FOrzMC%2FMojangAPI%2Fbadge%3Ftype%3Dswift-versions>
+[platform]: <https://img.shields.io/endpoint?url=https%3A%2F%2Fswiftpackageindex.com%2Fapi%2Fpackages%2FOrzMC%2FMojangAPI%2Fbadge%3Ftype%3Dplatforms>
+[repo]: <https://swiftpackageindex.com/OrzMC/MojangAPI>
 
 ## 说明
 

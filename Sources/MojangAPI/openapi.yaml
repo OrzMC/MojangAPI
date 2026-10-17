@@ -4,7 +4,7 @@ info:
   description: |-
     This is Mojang API written in Swift for making a launcher yourself
 
-    - **[MojangAPI Repo](https://github.com/wangzhizhou/MojangAPI)**
+    - **[MojangAPI Repo](https://github.com/OrzMC/MojangAPI)**
 
   version: 1.0.0
 tags:
