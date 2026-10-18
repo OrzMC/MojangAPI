@@ -12,6 +12,11 @@ import CryptoKit
 import Crypto
 #endif
 import Foundation
+
+// Linux/Windows 把 URLSession/URLRequest 放在 FoundationNetworking（决策 D8：跨平台）。
+#if canImport(FoundationNetworking)
+import FoundationNetworking
+#endif
 import OpenAPIRuntime
 import OpenAPIURLSession
 
