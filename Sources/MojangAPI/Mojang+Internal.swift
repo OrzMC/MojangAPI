@@ -5,7 +5,12 @@
 //  Created by wangzhizhou on 2024/12/28.
 //
 
+// Apple 平台有 CryptoKit；Linux/Windows 用 swift-crypto 的 `Crypto`（决策 D8：跨平台）。
+#if canImport(CryptoKit)
 import CryptoKit
+#elseif canImport(Crypto)
+import Crypto
+#endif
 import Foundation
 import OpenAPIRuntime
 import OpenAPIURLSession

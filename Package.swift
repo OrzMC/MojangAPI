@@ -31,6 +31,11 @@ let package = Package(
             url: "https://github.com/OrzGeeker/OrzSwiftKit.git",
             branch: "main"
         ),
+        // 非 Apple 平台没有 CryptoKit，用 swift-crypto 顶 `Insecure.SHA1`（决策 D8：跨平台）。
+        .package(
+            url: "https://github.com/apple/swift-crypto.git",
+            from: "3.12.3"
+        ),
     ],
     targets: [
         .target(
@@ -47,6 +52,11 @@ let package = Package(
                 .product(
                     name: "CacheKit",
                     package: "OrzSwiftKit"
+                ),
+                .product(
+                    name: "Crypto",
+                    package: "swift-crypto",
+                    condition: .when(platforms: [.linux])
                 ),
             ],
             plugins: [
