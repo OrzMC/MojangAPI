@@ -56,7 +56,7 @@ let package = Package(
                 .product(
                     name: "Crypto",
                     package: "swift-crypto",
-                    condition: .when(platforms: [.linux])
+                    condition: .when(platforms: [.linux, .windows])
                 ),
             ],
             plugins: [
